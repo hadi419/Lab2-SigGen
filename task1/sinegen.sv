@@ -1,4 +1,4 @@
-module singen #(
+module sinegen #(
     parameter   A_WIDTH = 8,        // address address width 
                 D_WIDTH = 8         // data width
 )(

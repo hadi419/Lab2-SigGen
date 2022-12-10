@@ -11,7 +11,7 @@ module counter #(
 
 always_ff @ (posedge clk)
     if(rst)         count <= {WIDTH{1'b0}};                 // when reset is asserted output signal count is receiving the value of 0
-    else if(en)     count <= count + {{WIDTH-1{1'b0}}, incr}; // if reset is not asserted output is the current value of count plus one; this shows that the value of count is saved in the register and then passed to an adder 
-    else            coutn <= count     
+    else if(en)     count <= count + incr; // if reset is not asserted output is the current value of count plus one; this shows that the value of count is saved in the register and then passed to an adder 
+    else            count <= count;    
         
 endmodule 
