@@ -19,8 +19,12 @@ class Vsinegen___024root final : public VerilatedModule {
     VL_IN8(incr,7,0);
     VL_OUT8(dout,7,0);
     CData/*7:0*/ sinegen__DOT__address;
-    CData/*0:0*/ __Vclklast__TOP__clk;
+    CData/*0:0*/ __Vtrigrprev__TOP__clk;
+    CData/*0:0*/ __VactContinue;
+    IData/*31:0*/ __VactIterCount;
     VlUnpacked<CData/*7:0*/, 256> sinegen__DOT__sineRom__DOT__rom_array;
+    VlTriggerVec<1> __VactTriggered;
+    VlTriggerVec<1> __VnbaTriggered;
 
     // INTERNAL VARIABLES
     Vsinegen__Syms* const vlSymsp;

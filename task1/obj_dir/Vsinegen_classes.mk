@@ -7,6 +7,8 @@
 ### Switches...
 # C11 constructs required?  0/1 (always on now)
 VM_C11 = 1
+# Timing enabled?  0/1
+VM_TIMING = 0
 # Coverage output mode?  0/1 (from --coverage)
 VM_COVERAGE = 0
 # Parallel builds?  0/1 (from --output-split)
@@ -24,12 +26,13 @@ VM_TRACE_FST = 0
 # Generated module classes, fast-path, compile with highest optimization
 VM_CLASSES_FAST += \
 	Vsinegen \
-	Vsinegen___024root__DepSet_hc6e70653__0 \
+	Vsinegen___024root__DepSet_h48d2ad0b__0 \
+	Vsinegen___024root__DepSet_h64540760__0 \
 
 # Generated module classes, non-fast-path, compile with low/medium optimization
 VM_CLASSES_SLOW += \
 	Vsinegen___024root__Slow \
-	Vsinegen___024root__DepSet_hc6e70653__0__Slow \
+	Vsinegen___024root__DepSet_h64540760__0__Slow \
 
 # Generated support classes, fast-path, compile with highest optimization
 VM_SUPPORT_FAST += \

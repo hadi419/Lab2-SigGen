@@ -35,27 +35,15 @@ Vsinegen::~Vsinegen() {
 }
 
 //============================================================
-// Evaluation loop
+// Evaluation function
 
-void Vsinegen___024root___eval_initial(Vsinegen___024root* vlSelf);
-void Vsinegen___024root___eval_settle(Vsinegen___024root* vlSelf);
-void Vsinegen___024root___eval(Vsinegen___024root* vlSelf);
 #ifdef VL_DEBUG
 void Vsinegen___024root___eval_debug_assertions(Vsinegen___024root* vlSelf);
 #endif  // VL_DEBUG
-void Vsinegen___024root___final(Vsinegen___024root* vlSelf);
-
-static void _eval_initial_loop(Vsinegen__Syms* __restrict vlSymsp) {
-    vlSymsp->__Vm_didInit = true;
-    Vsinegen___024root___eval_initial(&(vlSymsp->TOP));
-    // Evaluate till stable
-    vlSymsp->__Vm_activity = true;
-    do {
-        VL_DEBUG_IF(VL_DBG_MSGF("+ Initial loop\n"););
-        Vsinegen___024root___eval_settle(&(vlSymsp->TOP));
-        Vsinegen___024root___eval(&(vlSymsp->TOP));
-    } while (0);
-}
+void Vsinegen___024root___eval_static(Vsinegen___024root* vlSelf);
+void Vsinegen___024root___eval_initial(Vsinegen___024root* vlSelf);
+void Vsinegen___024root___eval_settle(Vsinegen___024root* vlSelf);
+void Vsinegen___024root___eval(Vsinegen___024root* vlSelf);
 
 void Vsinegen::eval_step() {
     VL_DEBUG_IF(VL_DBG_MSGF("+++++TOP Evaluate Vsinegen::eval_step\n"); );
@@ -63,15 +51,26 @@ void Vsinegen::eval_step() {
     // Debug assertions
     Vsinegen___024root___eval_debug_assertions(&(vlSymsp->TOP));
 #endif  // VL_DEBUG
-    // Initialize
-    if (VL_UNLIKELY(!vlSymsp->__Vm_didInit)) _eval_initial_loop(vlSymsp);
-    // Evaluate till stable
     vlSymsp->__Vm_activity = true;
-    do {
-        VL_DEBUG_IF(VL_DBG_MSGF("+ Clock loop\n"););
-        Vsinegen___024root___eval(&(vlSymsp->TOP));
-    } while (0);
+    if (VL_UNLIKELY(!vlSymsp->__Vm_didInit)) {
+        vlSymsp->__Vm_didInit = true;
+        VL_DEBUG_IF(VL_DBG_MSGF("+ Initial\n"););
+        Vsinegen___024root___eval_static(&(vlSymsp->TOP));
+        Vsinegen___024root___eval_initial(&(vlSymsp->TOP));
+        Vsinegen___024root___eval_settle(&(vlSymsp->TOP));
+    }
+    VL_DEBUG_IF(VL_DBG_MSGF("+ Eval\n"););
+    Vsinegen___024root___eval(&(vlSymsp->TOP));
     // Evaluate cleanup
+}
+
+//============================================================
+// Events and timing
+bool Vsinegen::eventsPending() { return false; }
+
+uint64_t Vsinegen::nextTimeSlot() {
+    VL_FATAL_MT(__FILE__, __LINE__, "", "%Error: No delays in the design");
+    return 0;
 }
 
 //============================================================
@@ -84,8 +83,10 @@ const char* Vsinegen::name() const {
 //============================================================
 // Invoke final blocks
 
+void Vsinegen___024root___eval_final(Vsinegen___024root* vlSelf);
+
 VL_ATTR_COLD void Vsinegen::final() {
-    Vsinegen___024root___final(&(vlSymsp->TOP));
+    Vsinegen___024root___eval_final(&(vlSymsp->TOP));
 }
 
 //============================================================
@@ -122,6 +123,9 @@ VL_ATTR_COLD static void trace_init(void* voidSelf, VerilatedVcd* tracep, uint32
 VL_ATTR_COLD void Vsinegen___024root__trace_register(Vsinegen___024root* vlSelf, VerilatedVcd* tracep);
 
 VL_ATTR_COLD void Vsinegen::trace(VerilatedVcdC* tfp, int levels, int options) {
+    if (tfp->isOpen()) {
+        vl_fatal(__FILE__, __LINE__, __FILE__,"'Vsinegen::trace()' shall not be called after 'VerilatedVcdC::open()'.");
+    }
     if (false && levels && options) {}  // Prevent unused
     tfp->spTrace()->addModel(this);
     tfp->spTrace()->addInitCb(&trace_init, &(vlSymsp->TOP));
